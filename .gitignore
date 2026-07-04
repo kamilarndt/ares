@@ -1,0 +1,26 @@
+# Secrets
+.env.omnigent
+**/.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Omnigent
+.omnigent/
+
+# Docker
+harness-data/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

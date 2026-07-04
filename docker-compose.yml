@@ -1,0 +1,23 @@
+services:
+  omnigent:
+    build: .
+    ports:
+      - "6767:6767"
+    networks:
+      - isolated-net
+    volumes:
+      - ./harness-data:/home/omnigent/harness-data
+      - ./agents:/home/omnigent/agents
+      - ./policies:/home/omnigent/policies
+    env_file:
+      - .env.omnigent
+    environment:
+      - OMNIGENT_HOST=0.0.0.0
+      - OMNIGENT_PORT=6767
+      - OMNIGENT_HOME=/home/omnigent
+    restart: unless-stopped
+
+networks:
+  isolated-net:
+    driver: bridge
+    name: ares-isolated
