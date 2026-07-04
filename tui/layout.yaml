@@ -1,0 +1,43 @@
+# ARES Command Center — tmux layout definition
+# Used by layout.py to create the tmux session.
+# Format: session → windows → panes (each can have commands, split, size)
+
+session:
+  name: ares-cmd
+  windows:
+    - name: status
+      root: ~/autonomous-agent
+      panes:
+        - commands:
+            - ./tui/scripts/status.sh
+        - commands:
+            - ./tui/scripts/logs.sh
+          split: vertical
+          size: 30
+
+    - name: shell
+      root: ~/autonomous-agent
+      panes:
+        - commands:
+            - echo "🐚 ARES Shell — tu uruchamiasz agentów"
+            - echo ""
+            - echo "  quick commands:"
+            - echo "    omnigent run config.yaml --prompt ..."
+            - echo "    git status"
+            - echo "    systemctl status omniroute"
+            - exec bash
+
+    - name: model-tui
+      root: ~/autonomous-agent
+      panes:
+        - commands:
+            - model-tui 2>/dev/null || echo 'model-tui not installed'; exec bash
+
+# Status bar config
+status_bar:
+  left: "#[fg=green]🐺 ARES #[fg=white]|"
+  right: "#[fg=yellow]%Y-%m-%d %H:%M:%S #[fg=white]| \
+          #[fg=cyan]#(curl -s -o /dev/null -w '%{http_code}' \
+          -H 'Authorization: Bearer sk-42e810ef4042e82f-c42dc9-fa0c1bce' \
+          http://localhost:20128/api/v1/models 2>/dev/null || echo 'DOWN')#[fg=white] OmniRoute"
+  interval: 5
