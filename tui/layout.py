@@ -47,12 +47,18 @@ def create_session(layout):
     # Add panes to first window
     add_panes(f"{name}:0", w0.get("panes", []), w0_root)
 
+    # Set layout if defined
+    if w0.get("layout"):
+        tmux("select-layout", "-t", f"{name}:0", w0["layout"])
+
     # Create remaining windows
     for i, w in enumerate(windows[1:], start=1):
         w_name = w["name"]
         w_root = os.path.expanduser(w.get("root", "~"))
         tmux("new-window", "-t", name, "-n", w_name, "-c", w_root)
         add_panes(f"{name}:{i}", w.get("panes", []), w_root)
+        if w.get("layout"):
+            tmux("select-layout", "-t", f"{name}:{i}", w["layout"])
 
     # Status bar
     sb = layout.get("status_bar", {})

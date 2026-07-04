@@ -1,6 +1,6 @@
 # ARES Command Center — tmux layout definition
-# Used by layout.py to create the tmux session.
-# Format: session → windows → panes (each can have commands, split, size)
+# Usage: ares-cmd  (create/attach)   ares-cmd kill
+# Edytuj ten plik by zmienić układ okien.
 
 session:
   name: ares-cmd
@@ -19,25 +19,27 @@ session:
       root: ~/autonomous-agent
       panes:
         - commands:
-            - echo "🐚 ARES Shell — tu uruchamiasz agentów"
+            - cd ~/autonomous-agent
             - echo ""
-            - echo "  quick commands:"
-            - echo "    omnigent run config.yaml --prompt ..."
+            - echo "  🐚 ARES SHELL"
+            - echo "  ─────────────────────────────────────────────"
+            - echo "  Quick commands:"
+            - echo "    omnigent run config.yaml --prompt \"...\""
+            - echo "    ares-cmd              — restart center"
             - echo "    git status"
+            - echo "    git diff --stat"
             - echo "    systemctl status omniroute"
-            - exec bash
+            - echo ""
+            - exec bash -l
 
     - name: model-tui
       root: ~/autonomous-agent
       panes:
         - commands:
-            - model-tui 2>/dev/null || echo 'model-tui not installed'; exec bash
+            - "if command -v model-tui &>/dev/null; then model-tui; else echo 'model-tui not installed'; echo 'Install: pip install textual && hermes tools install'; exec bash -l; fi"
 
-# Status bar config
+# Status bar
 status_bar:
   left: "#[fg=green]🐺 ARES #[fg=white]|"
-  right: "#[fg=yellow]%Y-%m-%d %H:%M:%S #[fg=white]| \
-          #[fg=cyan]#(curl -s -o /dev/null -w '%{http_code}' \
-          -H 'Authorization: Bearer sk-42e810ef4042e82f-c42dc9-fa0c1bce' \
-          http://localhost:20128/api/v1/models 2>/dev/null || echo 'DOWN')#[fg=white] OmniRoute"
+  right: "#[fg=yellow]%Y-%m-%d %H:%M:%S #[fg=white]| #[fg=cyan]#(curl -s -o /dev/null -w '%{http_code}' -H 'Authorization: Bearer sk-42e810ef4042e82f-c42dc9-fa0c1bce' http://localhost:20128/api/v1/models 2>/dev/null || echo '?')#[fg=white] OmniRoute #[fg=white]| #[fg=green]#(tmux list-windows -t ares-cmd 2>/dev/null | wc -l || echo '?')#[fg=white] win"
   interval: 5
