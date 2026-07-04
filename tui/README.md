@@ -1,103 +1,72 @@
-# ARES Command Center — Windows Terminal Profile
+# ARES Command Center — Centrum Dowodzenia
 
-## Instalacja
+## Co to jest
 
-### 1. Działanie w WSL
-Sesja tmux została już utworzona. Możesz do niej dołączyć z terminala WSL:
+4-okienny tmux do monitorowania i sterowania systemem ARES.
+
+## Uruchomienie
+
 ```bash
-tmux attach -t ares-cmd
-```
-lub
-```bash
-ares-cmd
+ares-cmd           # Włącz
+ares-cmd kill      # Wyłącz
+tmux attach -t ares-cmd  # Dołącz z innego terminala
 ```
 
-### 2. Windows Terminal Profile (GUI)
+## Windows Terminal Profile
 
-Dodaj poniższy profil do `settings.json` Windows Terminal:
-(otwórz Windows Terminal → Ctrl+Shift+, (przecinek) → znajdź `"profiles": {"list": [...]}` → wklej)
+Dodaj do `settings.json` (Ctrl+Shift+, w Windows Terminal):
 
 ```json
 {
     "name": "ARES Command Center",
     "commandline": "wsl.exe -d Ubuntu-D tmux new-session -A -s ares-cmd",
     "icon": "🐺",
-    "startingDirectory": "\\\\wsl$\\Ubuntu-D\\root\\autonomous-agent",
     "tabTitle": "ARES CMD",
-    "colorScheme": "Campbell",
-    "font": {
-        "face": "Cascadia Mono",
-        "size": 11
-    },
-    "padding": "8, 8, 8, 8",
-    "cursorShape": "filledBox",
+    "font": {"face": "Cascadia Mono", "size": 11},
     "useAcrylic": true,
     "acrylicOpacity": 0.85,
-    "closeOnExit": "graceful",
-    "suppressApplicationTitle": true
+    "closeOnExit": "graceful"
 }
 ```
 
-> **Uwaga:** Jeśli Twoja dystrybucja WSL ma inną nazwę niż `Ubuntu-D`, zmień `wsl.exe -d Ubuntu-D` na odpowiednią:
-> ```bash
-> wsl -l -v   # Lista dystrybucji WSL
-> ```
-
-### 3. Skrót na pulpicie Windows
-
-Stwórz plik `ARES Cmd.url` na pulpicie:
-```
-[InternetShortcut]
-URL=wt.exe -p "ARES Command Center"
-```
-
-## Układ okien (wide screen)
+## Układ
 
 ```
-┌────────── Window 0: DASHBOARD ──────────────────┐
-│  ┌────────────┬────────────┬──────────────────┐ │
-│  │   HEALTH   │    COST    │     BUDGET        │ │
-│  │  OmniRoute │  $0.00/d   │  [████░░░░]      │ │
-│  │  System    │  Provider  │  $3 ask / $5 cap │ │
-│  │  Tools     │  7d trend  │  Tier progress   │ │
-│  ├────────────┴────────────┴──────────────────┤ │
-│  │           AGENT ACTIVITY FEED               │ │
-│  │  (live logs + periodic health checks)       │ │
-│  └─────────────────────────────────────────────┘ │
-├────────── Window 1: AGENTS ─────────────────────┤
-│  ✅ scout (pi)     ✅ implementer (opencode)     │
-│  ✅ bidder (pi)    ✅ reviewer (pi)              │
-│  ✅ deliverer(pi)  ✅ financier (pi)             │
-│  ✅ sdr(hermes)    ✅ aeo (opencode)             │
-│  ✅ trader(pi)     ✅ council (pi)               │
-│  ✅ insight(hermes)✅ war-room (pi)              │
-├────────── Window 2: CONTROL ────────────────────┤
-│  Git status (left)  │  Quick commands (right)   │
-├────────── Window 3: MODEL-TUI ──────────────────┤
-│  Live model feed, token usage, budget           │
-├────────── Window 4: ARES-RUN ───────────────────┤
-│  Launch and monitor ARES agents                 │
-├────────── Window 5: SHELL ──────────────────────┤
-│  Ad-hoc terminal                                 │
-└─────────────────────────────────────────────────┘
+┌── 0: status ─────────────────────────────────────────┐
+│                                                       │
+│  ┌──── SYSTEM ────┐   ┌──── AGENTS (12/12) ───────┐ │
+│  │ ✅ OmniRoute    │   │ scout ✅ 0.2s bidder ✅ 0.3│ │
+│  │ CPU 82% · RAM   │   │ ... 12 agentów            │ │
+│  │ Repo: main      │   │                           │ │
+│  ├──── BUDGET ─────┤   ├──── TOOLS ────────────────┤ │
+│  │ $0/$5 [░░] 0%   │   │ opencode ✅ pi ✅ hermes ✅│ │
+│  └─────────────────┘   └───────────────────────────┘ │
+│                                                       │
+│  Windows: 0=status  1=logs  2=shell  3=model-tui     │
+└───────────────────────────────────────────────────────┘
+
+┌── 1: logs ──────────────────────────────────────────┐
+│  Live output agentów ARES w czasie rzeczywistym      │
+└──────────────────────────────────────────────────────┘
+
+┌── 2: shell ─────────────────────────────────────────┐
+│  Terminal do uruchamiania ARES:                      │
+│  omnigent run config.yaml --prompt "Scout: ..."      │
+│  git status, docker, systemctl                       │
+└──────────────────────────────────────────────────────┘
+
+┌── 3: model-tui ─────────────────────────────────────┐
+│  Monitoring modeli i kosztów (jeśli zainstalowane)   │
+└──────────────────────────────────────────────────────┘
 ```
 
-## Nawigacja tmux
+## Nawigacja
 
-| Skrót | Funkcja |
-|-------|---------|
-| `Ctrl+b 0-5` | Przełącz okno |
-| `Ctrl+b n/p` | Następne/poprzednie okno |
-| `Ctrl+b d` | Odłącz (sesja działa w tle) |
-| `Ctrl+b [` | Scroll (q-wyjście) |
-| `Ctrl+b %` | Split pionowy |
-| `Ctrl+b "` | Split poziomy |
-| `Ctrl+b →/←` | Nawigacja między panelami |
-
-## Komendy
-
-```bash
-ares-cmd          # Utwórz lub dołącz do sesji
-ares-cmd kill     # Zatrzymaj sesję
-tmux attach -t ares-cmd   # Dołączenie z innego terminala
-```
+| Ctrl+b + ... | Funkcja |
+|--------------|---------|
+| `0` | Status (widok główny) |
+| `1` | Logi agentów |
+| `2` | Shell (uruchamiaj ARES) |
+| `3` | model-tui |
+| `d` | Odłącz (sesja w tle) |
+| `[` | Scroll (q — wyjście) |
