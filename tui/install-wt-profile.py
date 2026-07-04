@@ -6,10 +6,9 @@ SETTINGS = "/mnt/c/Users/user/AppData/Local/Packages/Microsoft.WindowsTerminal_8
 
 ARES_PROFILE = {
     "name": "ARES Command Center",
-    "commandline": "wsl.exe -d Ubuntu-D tmux new-session -A -s ares-cmd",
+    "commandline": "wsl.exe -d Ubuntu-D bash -c /root/autonomous-agent/tui/ares-cmd.sh",
     "icon": "🐺",
     "tabTitle": "ARES CMD",
-    "startingDirectory": "\\\\wsl$\\Ubuntu-D\\root\\autonomous-agent",
     "colorScheme": "Campbell",
     "font": {"face": "Cascadia Mono", "size": 11},
     "padding": "8, 8, 8, 8",

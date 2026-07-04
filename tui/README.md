@@ -19,7 +19,7 @@ Dodaj do `settings.json` (Ctrl+Shift+, w Windows Terminal):
 ```json
 {
     "name": "ARES Command Center",
-    "commandline": "wsl.exe -d Ubuntu-D tmux new-session -A -s ares-cmd",
+    "commandline": "wsl.exe -d Ubuntu-D bash -c /root/autonomous-agent/tui/ares-cmd.sh",
     "icon": "🐺",
     "tabTitle": "ARES CMD",
     "font": {"face": "Cascadia Mono", "size": 11},
