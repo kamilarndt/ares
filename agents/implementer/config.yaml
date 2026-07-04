@@ -28,4 +28,12 @@ os_env:
   type: caller_process
   cwd: /root/autonomous-agent
   sandbox:
-    type: none
+    type: bubblewrap
+    read_only_paths:
+      - /usr
+      - /lib
+      - /lib64
+      - /etc
+    writable_paths:
+      - /root/autonomous-agent/harness-data
+      - /tmp

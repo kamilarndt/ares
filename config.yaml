@@ -142,3 +142,10 @@ guardrails:
         path: omnigent.inner.nessie.policies.headless_subagent_purpose_guard
         arguments:
           allowed_purposes: [scout, bid, implement, review, deliver, finance, promote, optimize, trade, analyze, debate, audit]
+    cost_budget:
+      type: function
+      function:
+        path: omnigent.policies.builtins.cost.cost_budget
+        arguments:
+          ask_thresholds_usd: [3.0]
+          max_cost_usd: 5.0
