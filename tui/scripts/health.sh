@@ -7,9 +7,9 @@ OMNIROUTE_DB="$HOME/.omniroute/storage.sqlite"
 while true; do
   clear
   # Single-line header (wide optimized)
-  HEALTH=$(curl -s -o /dev/null -w "%{http_code}" "$OMNIROUTE_URL" 2>/dev/null || echo "000")
+  HEALTH=$(curl -s -o /dev/null -w "%{http_code}" "$OMNIROUTE_URL/api/v1/models" -H "Authorization: Bearer sk-42e810ef4042e82f-c42dc9-fa0c1bce" 2>/dev/null || echo "000")
   OMNI_STATUS="🔴 DOWN"
-  [ "$HEALTH" = "200" ] || [ "$HEALTH" = "404" ] && OMNI_STATUS="✅ RUNNING"
+  [ "$HEALTH" = "200" ] && OMNI_STATUS="✅ RUNNING"
 
   # System stats one-liner
   CPU=$(top -bn1 | grep "Cpu(s)" | awk '{print $2}' 2>/dev/null || echo "?")
@@ -44,10 +44,9 @@ while true; do
   echo "  │  TOOLS                                                          │"
   echo "  ├──────────────────────────────────────────────────────────────────┤"
   for tool in "opencode" "pi" "hermes" "model-tui" "bwrap"; do
-    PATH=$(which $tool 2>/dev/null)
-    if [ -n "$PATH" ]; then
+    if command -v $tool &>/dev/null; then
       VER=$($tool --version 2>/dev/null | head -1)
-      printf "  │  ✅ %-15s │ %s\n" "$tool" "${VER:-$PATH}"
+      printf "  │  ✅ %-15s │ %s\n" "$tool" "${VER:-$(command -v $tool)}"
     else
       printf "  │  ❌ %-15s │ not installed\n" "$tool"
     fi
@@ -57,11 +56,13 @@ while true; do
 
   # Git status
   if [ -d "$HOME/autonomous-agent/.git" ]; then
-    BRANCH=$(cd ~/autonomous-agent && git branch --show-current 2>/dev/null)
-    COMMITS=$(cd ~/autonomous-agent && git rev-list --count HEAD 2>/dev/null)
-    LAST=$(cd ~/autonomous-agent && git log --oneline -1 2>/dev/null)
-    DIRTY=$(cd ~/autonomous-agent && git status --short 2>/dev/null | wc -l)
-    echo "  📁 ares repo:  ${BRANCH}  |  ${COMMITS} commits  |  ${DIRTY} dirty files  |  last: ${LAST}"
+    cd "$HOME/autonomous-agent"
+    BRANCH=$(git branch --show-current 2>/dev/null || echo "?")
+    COMMITS=$(git rev-list --count HEAD 2>/dev/null || echo "?")
+    LAST=$(git log --oneline -1 2>/dev/null || echo "?")
+    DIRTY=$(git status --short 2>/dev/null | wc -l)
+    echo "  📁 ares repo:  ${BRANCH}  |  ${COMMITS} commits  |  ${DIRTY} dirty  |  ${LAST}"
+    cd - &>/dev/null
   fi
 
   echo ""

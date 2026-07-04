@@ -63,7 +63,7 @@ tmux send-keys -t "$SESSION:5.0" "cd ~/autonomous-agent && echo 'ARES Shell — 
 
 # ── Status bar — wide optimized ──
 tmux set-option -t "$SESSION" -g status-left "#[fg=green]🐺 ARES CMD #[fg=white]|"
-tmux set-option -t "$SESSION" -g status-right "#[fg=yellow]%Y-%m-%d %H:%M:%S #[fg=white]| #[fg=cyan]#(curl -s -o /dev/null -w '%{http_code}' http://localhost:20128 2>/dev/null || echo 'DOWN')#[fg=white] OmniRoute #[fg=white]| #[fg=magenta]#(python3 -c \"import sqlite3; db='/root/.omniroute/storage.sqlite'; c=sqlite3.connect(db); d=c.execute('SELECT COALESCE(SUM(total_cost),0) FROM daily_usage_summary WHERE date=date(\\\"now\\\",\\\"localtime\\\")').fetchone()[0]; c.close(); print(f'\\\${d:.2f}')\" 2>/dev/null || echo '\$?')#[fg=white] today"
+tmux set-option -t "$SESSION" -g status-right "#[fg=yellow]%Y-%m-%d %H:%M:%S #[fg=white]| #[fg=cyan]#(curl -s -o /dev/null -w '%{http_code}' -H 'Authorization: Bearer sk-42e810ef4042e82f-c42dc9-fa0c1bce' http://localhost:20128/api/v1/models 2>/dev/null || echo 'DOWN')#[fg=white] OmniRoute #[fg=white]| #[fg=magenta]#(python3 -c \"import sqlite3; db='/root/.omniroute/storage.sqlite'; c=sqlite3.connect(db); d=c.execute('SELECT COALESCE(SUM(total_cost),0) FROM daily_usage_summary WHERE date=date(\\\"now\\\",\\\"localtime\\\")').fetchone()[0]; c.close(); print(f'\\\${d:.2f}')\" 2>/dev/null || echo '\$?')#[fg=white] today"
 tmux set-option -t "$SESSION" -g status-interval 5
 tmux set-option -t "$SESSION" -g status-left-length 30
 tmux set-option -t "$SESSION" -g window-status-current-style "bg=blue,fg=white"
