@@ -1,0 +1,27 @@
+# ARES Command Center — teamocil layout
+# Usage: ares-cmd         (create/attach)
+#        ares-cmd kill    (kill session)
+# UWAGA: unikaj dwukropkow (:) w stringach — teamocil YAML parser je zjada
+
+windows:
+  - name: status
+    root: ~/autonomous-agent
+    panes:
+      - commands:
+          - ./tui/scripts/status.sh
+      - commands:
+          - sleep 0.3 && ./tui/scripts/logs.sh
+
+  - name: shell
+    root: ~/autonomous-agent
+    panes:
+      - commands:
+          - cd ~/autonomous-agent
+          - echo 'ARES Shell ready'
+          - exec bash -l
+
+  - name: model-tui
+    root: ~/autonomous-agent
+    panes:
+      - commands:
+          - "if command -v model-tui >/dev/null 2>&1; then model-tui; else echo 'model-tui not installed'; exec bash -l; fi"
