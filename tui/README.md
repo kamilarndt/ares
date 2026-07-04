@@ -51,38 +51,42 @@ Stwórz plik `ARES Cmd.url` na pulpicie:
 URL=wt.exe -p "ARES Command Center"
 ```
 
-## Układ okien
+## Układ okien (wide screen)
 
 ```
-┌──────────── Window 0: DASHBOARD ────────────┐
-│  ┌──────────────────┬──────────────────────┐ │
-│  │  Health Monitor  │   Cost Monitor        │ │
-│  │  • OmniRoute     │   • Daily spend       │ │
-│  │  • System stats  │   • Per-provider      │ │
-│  │  • Budget gauge  │   • 7-day history     │ │
-│  ├──────────────────┴──────────────────────┤ │
-│  │  Agent Activity Feed                     │ │
-│  │  (live logs + periodic ping)             │ │
-│  └─────────────────────────────────────────┘ │
-├──────────── Window 1: AGENTS ───────────────┤
-│  ✅ scout       ✅ bidder       ✅ implementer│
-│  ✅ reviewer    ✅ deliverer    ✅ financier  │
-│  ✅ sdr         ✅ aeo          ✅ trader    │
-│  ✅ council     ✅ insight      ✅ war-room  │
-├──────────── Window 2: CONTROL ──────────────┤
-│  Git status + agent config health + quick cmds│
-├──────────── Window 3: MODEL-TUI ────────────┤
-│  Live model feed, token usage, budget       │
-├──────────── Window 4: SHELL ────────────────┤
-│  Ad-hoc terminal                             │
-└─────────────────────────────────────────────┘
+┌────────── Window 0: DASHBOARD ──────────────────┐
+│  ┌────────────┬────────────┬──────────────────┐ │
+│  │   HEALTH   │    COST    │     BUDGET        │ │
+│  │  OmniRoute │  $0.00/d   │  [████░░░░]      │ │
+│  │  System    │  Provider  │  $3 ask / $5 cap │ │
+│  │  Tools     │  7d trend  │  Tier progress   │ │
+│  ├────────────┴────────────┴──────────────────┤ │
+│  │           AGENT ACTIVITY FEED               │ │
+│  │  (live logs + periodic health checks)       │ │
+│  └─────────────────────────────────────────────┘ │
+├────────── Window 1: AGENTS ─────────────────────┤
+│  ✅ scout (pi)     ✅ implementer (opencode)     │
+│  ✅ bidder (pi)    ✅ reviewer (pi)              │
+│  ✅ deliverer(pi)  ✅ financier (pi)             │
+│  ✅ sdr(hermes)    ✅ aeo (opencode)             │
+│  ✅ trader(pi)     ✅ council (pi)               │
+│  ✅ insight(hermes)✅ war-room (pi)              │
+├────────── Window 2: CONTROL ────────────────────┤
+│  Git status (left)  │  Quick commands (right)   │
+├────────── Window 3: MODEL-TUI ──────────────────┤
+│  Live model feed, token usage, budget           │
+├────────── Window 4: ARES-RUN ───────────────────┤
+│  Launch and monitor ARES agents                 │
+├────────── Window 5: SHELL ──────────────────────┤
+│  Ad-hoc terminal                                 │
+└─────────────────────────────────────────────────┘
 ```
 
 ## Nawigacja tmux
 
 | Skrót | Funkcja |
 |-------|---------|
-| `Ctrl+b 0-4` | Przełącz okno |
+| `Ctrl+b 0-5` | Przełącz okno |
 | `Ctrl+b n/p` | Następne/poprzednie okno |
 | `Ctrl+b d` | Odłącz (sesja działa w tle) |
 | `Ctrl+b [` | Scroll (q-wyjście) |

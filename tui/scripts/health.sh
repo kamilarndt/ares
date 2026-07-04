@@ -1,78 +1,70 @@
 #!/bin/bash
-# ARES Command Center — OmniRoute health + budget + system monitor
-# Runs as a continuous refresh loop.
+# ARES Command Center — OmniRoute health + system monitor (wide)
 
 OMNIROUTE_URL="http://localhost:20128"
 OMNIROUTE_DB="$HOME/.omniroute/storage.sqlite"
 
 while true; do
   clear
-  echo "╔══════════════════════════════════════════════════════════════╗"
-  echo "║              ARES — AUTONOMOUS REVENUE ENGINE               ║"
-  echo "║              Command Center · $(date '+%Y-%m-%d %H:%M:%S')             ║"
-  echo "╚══════════════════════════════════════════════════════════════╝"
-  echo ""
-
-  # ── OmniRoute Health ──
+  # Single-line header (wide optimized)
   HEALTH=$(curl -s -o /dev/null -w "%{http_code}" "$OMNIROUTE_URL" 2>/dev/null || echo "000")
-  if [ "$HEALTH" = "200" ] || [ "$HEALTH" = "404" ]; then
-    echo "  🔵 OmniRoute:     ✅ RUNNING  (HTTP 200/404 — gateway live)"
-  else
-    echo "  🔴 OmniRoute:     ❌ DOWN  (HTTP $HEALTH)"
-  fi
+  OMNI_STATUS="🔴 DOWN"
+  [ "$HEALTH" = "200" ] || [ "$HEALTH" = "404" ] && OMNI_STATUS="✅ RUNNING"
 
-  # ── OmniRoute version + uptime ──
+  # System stats one-liner
+  CPU=$(top -bn1 | grep "Cpu(s)" | awk '{print $2}' 2>/dev/null || echo "?")
+  MEM_TOTAL=$(free -h | awk '/^Mem:/{print $2}' 2>/dev/null || echo "?")
+  MEM_USED=$(free -h | awk '/^Mem:/{print $3}' 2>/dev/null || echo "?")
+  DISK=$(df -h / | awk 'NR==2{print $5}' 2>/dev/null || echo "?")
+  UPTIME=$(uptime -p 2>/dev/null | sed 's/up //' || echo "?")
+
   if systemctl is-active omniroute &>/dev/null; then
-    UPTIME=$(systemctl show omniroute -p ActiveEnterTimestamp --value 2>/dev/null)
-    MEM=$(systemctl show omniroute -p MemoryCurrent --value 2>/dev/null)
-    echo "  ⏱  Uptime:        $UPTIME  |  Mem: $((MEM/1024/1024))MB"
-  fi
-
-  # ── Budget / Cost (from OmniRoute DB) ──
-  if [ -f "$OMNIROUTE_DB" ]; then
-    DAILY_COST=$(sqlite3 "$OMNIROUTE_DB" "
-      SELECT COALESCE(SUM(total_cost), 0) FROM daily_usage_summary
-      WHERE date = date('now','localtime')
-    " 2>/dev/null || echo "N/A")
-    TOTAL_COST=$(sqlite3 "$OMNIROUTE_DB" "
-      SELECT COALESCE(SUM(total_cost), 0) FROM daily_usage_summary
-    " 2>/dev/null || echo "N/A")
-    echo "  💰 Daily spend:   \$${DAILY_COST}  |  Total all-time: \$${TOTAL_COST}"
-    echo "  📊 Budget:        \$5.00/day cap  |  \$3.00 ask threshold"
-    # Budget bar
-    if [ "$DAILY_COST" != "N/A" ] && [ "$DAILY_COST" != "0" ]; then
-      PCT=$(python3 -c "print(min(100, int(float('$DAILY_COST')/5.0*100)))" 2>/dev/null)
-      BAR=$(python3 -c "print('█'*int($PCT/5) + '░'*(20-int($PCT/5)))" 2>/dev/null)
-      echo "  📈 Budget usage:  [${BAR}] ${PCT}%"
-    fi
+    OMNI_MEM=$(systemctl show omniroute -p MemoryCurrent --value 2>/dev/null)
+    OMNI_MEM_MB=$((OMNI_MEM/1024/1024))
   else
-    echo "  💰 Cost DB:       Not available"
+    OMNI_MEM_MB="?"
   fi
 
-  # ── System resources ──
-  CPU=$(top -bn1 | grep "Cpu(s)" | awk '{print $2}')
-  MEM_TOTAL=$(free -h | awk '/^Mem:/{print $2}')
-  MEM_USED=$(free -h | awk '/^Mem:/{print $3}')
-  DISK=$(df -h / | awk 'NR==2{print $5}')
-  echo "  🖥  System:        CPU ${CPU}%  |  RAM ${MEM_USED}/${MEM_TOTAL}  |  Disk ${DISK}"
-
-  # ── Model TUI quick status ──
+  echo "╔══════════════════════════════════════════════════════════════════════╗"
+  echo "║                        ARES SYSTEM DASHBOARD                        ║"
+  echo "║  $(date '+%Y-%m-%d %H:%M:%S')                                           ║"
+  echo "╚══════════════════════════════════════════════════════════════════════╝"
   echo ""
-  echo "  🔧 model-tui:     $(which model-tui 2>/dev/null || echo 'not installed')"
-  echo "  📦 Hermes:        $(hermes --version 2>/dev/null | head -1 || echo 'N/A')"
-  echo "  🎯 OpenCode:      $(opencode --version 2>/dev/null | head -1 || echo 'N/A')"
-  echo "  🧩 Pi:            $(pi --version 2>/dev/null | head -1 || echo 'N/A')"
+  
+  # Two-column layout for wide screens
+  echo "  ┌─────────────────────────────────┬─────────────────────────────────┐"
+  printf "  │  %-31s │  %-31s │\n" "OmniRoute: ${OMNI_STATUS}" "CPU: ${CPU}%"
+  printf "  │  %-31s │  %-31s │\n" "Memory: ${OMNI_MEM_MB}MB" "RAM: ${MEM_USED}/${MEM_TOTAL}"
+  printf "  │  %-31s │  %-31s │\n" "Uptime: ${UPTIME}" "Disk: ${DISK}"
+  echo "  └─────────────────────────────────┴─────────────────────────────────┘"
+  echo ""
 
-  # ── Git status ──
+  # Tools status
+  echo "  ┌──────────────────────────────────────────────────────────────────┐"
+  echo "  │  TOOLS                                                          │"
+  echo "  ├──────────────────────────────────────────────────────────────────┤"
+  for tool in "opencode" "pi" "hermes" "model-tui" "bwrap"; do
+    PATH=$(which $tool 2>/dev/null)
+    if [ -n "$PATH" ]; then
+      VER=$($tool --version 2>/dev/null | head -1)
+      printf "  │  ✅ %-15s │ %s\n" "$tool" "${VER:-$PATH}"
+    else
+      printf "  │  ❌ %-15s │ not installed\n" "$tool"
+    fi
+  done
+  echo "  └──────────────────────────────────────────────────────────────────┘"
+  echo ""
+
+  # Git status
   if [ -d "$HOME/autonomous-agent/.git" ]; then
     BRANCH=$(cd ~/autonomous-agent && git branch --show-current 2>/dev/null)
     COMMITS=$(cd ~/autonomous-agent && git rev-list --count HEAD 2>/dev/null)
-    echo "  📁 ares repo:     branch=${BRANCH}  commits=${COMMITS}"
+    LAST=$(cd ~/autonomous-agent && git log --oneline -1 2>/dev/null)
+    DIRTY=$(cd ~/autonomous-agent && git status --short 2>/dev/null | wc -l)
+    echo "  📁 ares repo:  ${BRANCH}  |  ${COMMITS} commits  |  ${DIRTY} dirty files  |  last: ${LAST}"
   fi
 
-  # ── Last refresh ──
   echo ""
-  echo "  ↻ Refreshing every 10s...  (Ctrl+C to stop)"
-  
-  sleep 10
+  echo "  🔄 Refreshing every 5s..."
+  sleep 5
 done
